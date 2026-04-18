@@ -27,5 +27,5 @@ def filter_and_sort_chunks(chunks):
         if text.strip().startswith("<a href"): # Skip comments that are just links
             continue
         filtered.append(chunk)
-    filtered.sort(lambda x: x["depth"])
+    filtered.sort(key=lambda x: x["depth"])
     return filtered 
