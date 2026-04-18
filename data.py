@@ -16,7 +16,7 @@ firebase_session = requests.Session()
 firebase_session.mount("https://hacker-news.firebaseio.com", LegacySSLAdapter())
 firebase_session.mount("https://hn.algolia.com", LegacySSLAdapter())
 
-def search_hn(query, num_stories=5):
+def search_hn(query, num_stories=3):
     # Searches HN 
     '''
     Breakdown of the dictionary it returns (for my own ref):
@@ -42,7 +42,7 @@ def fetch_item(item_id):
     response = firebase_session.get(url, timeout=10)
     return response.json()
 
-def fetch_comments_recursive(item_id, depth=0, max_depth=4):
+def fetch_comments_recursive(item_id, depth=0, max_depth=3):
     # Fetching a comment and all its children
     item = fetch_item(item_id)
     if not item:
@@ -53,8 +53,6 @@ def fetch_comments_recursive(item_id, depth=0, max_depth=4):
         "id": item.get("id"),
         "text": item.get("text", ""),
         "author": item.get("by", "[unknown]"),
-        "score": item.get("score", 0),
-        "time": item.get("time", 0),
         "depth": depth,
         "children": []
     }
@@ -75,7 +73,7 @@ def fetch_full_thread(story_id):
     comments = []
     
     if story.get("kids"):
-        for kid_id in story["kids"][:20]:  # Top 20 top-level comments
+        for kid_id in story["kids"][:10]:  # Top 10 top-level comments
             time.sleep(0.05)
             comment = fetch_comments_recursive(kid_id)
             if comment:

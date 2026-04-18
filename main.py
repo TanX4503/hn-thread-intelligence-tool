@@ -3,7 +3,7 @@ from data import *
 from process import *
 import os
 
-def format_chunks_for_prompt(chunks, max_chunks=60):
+def format_chunks_for_prompt(chunks, max_chunks=50):
     # Converting the data chunks into readable text for the LLM
     formatted = ""
     for i in range(0,max_chunks):
@@ -36,12 +36,12 @@ Note: Avoid generic answers like "opinions are mixed". The digest should contain
 """
     client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",  # Fast and free on Groq
+        model="meta-llama/llama-4-scout-17b-16e-instruct",  # Fast and free on Groq
         messages=[
             {"role": "user", "content": prompt}
         ],
-        temperature=0.3,  # Lower = more factual, less creative
-        max_tokens=1500,
+        temperature=0.3,  # A low temperature ensures that Groq does not hallucinate
+        max_completion_tokens=1024,
     )
     return response.choices[0].message.content
 
@@ -71,7 +71,7 @@ def run_tool(topic):
     print("=" * 60)
     print(digest)
 
-print("----------HACKER NEWS THREAD INTELLIGENCE TOOL----------")
+print("=================================HACKER NEWS THREAD INTELLIGENCE TOOL=================================")
 query = input("Enter your search query: ")
 print()
 run_tool(query)
