@@ -6,7 +6,7 @@ import os
 def format_chunks_for_prompt(chunks, max_chunks=60):
     # Converting the data chunks into readable text for the LLM
     formatted = ""
-    for i in chunks[:max_chunks]:
+    for i in range(0,max_chunks):
         formatted += f"\nComment {i+1} (depth: {chunks[i]['depth']}, author: {chunks[i]['author']})\n"
         formatted += chunks[i]["text"][:500]  # Truncate very long comments
         if chunks[i]["parent_context"]:

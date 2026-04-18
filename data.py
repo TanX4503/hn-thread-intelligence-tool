@@ -1,6 +1,20 @@
 import requests
-import json
+import ssl
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 import time
+
+class LegacySSLAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = create_urllib3_context()
+        ctx.options |= ssl.OP_LEGACY_SERVER_CONNECT
+        kwargs["ssl_context"] = ctx
+        return super().init_poolmanager(*args, **kwargs)
+
+# Create a session with the patched adapter, only for the Firebase domain
+firebase_session = requests.Session()
+firebase_session.mount("https://hacker-news.firebaseio.com", LegacySSLAdapter())
+firebase_session.mount("https://hn.algolia.com", LegacySSLAdapter())
 
 def search_hn(query, num_stories=5):
     # Searches HN 
@@ -14,7 +28,7 @@ def search_hn(query, num_stories=5):
     - _highlightResult - What matched my searchquery
     '''
     url = f"https://hn.algolia.com/api/v1/search?query={query}&tags=story&hitsPerPage={num_stories}"
-    response = requests.get(url)
+    response = firebase_session.get(url, timeout=10)
     data = response.json()
     return data["hits"] #The hits part of the data json is what contains the actual search results. The rest of the items in the dictionary is just search metadata that isnt too useful to us. 
     
@@ -25,7 +39,7 @@ def fetch_item(item_id):
     by, id, kids-comments to this, text (imp), unix timestamp, item type
     '''
     url = f"https://hacker-news.firebaseio.com/v0/item/{item_id}.json"
-    response = requests.get(url)
+    response = firebase_session.get(url, timeout=10)
     return response.json()
 
 def fetch_comments_recursive(item_id, depth=0, max_depth=4):
