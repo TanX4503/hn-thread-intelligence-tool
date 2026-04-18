@@ -25,6 +25,7 @@ decision.
 
 - Clone the repo onto your device: $ git clone https://github.com/TanX4503/hn-thread-intelligence-tool
 - Install the groq module: pip install groq
+- Setup an environment variable under the name GROQ_API_KEY and set its value to your Groq API Key which can be taken from console.groq.com 
 - Run main.py locally on your device
 
 # Dependancies used and Requirements
