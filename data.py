@@ -12,12 +12,6 @@ def search_hn(query, num_stories=5):
     - children - comments
     - _tags - internal stuff for filtering, searching and categorizing
     - _highlightResult - What matched my searchquery
-
-    What may be useful to me: 
-    - Title
-    - Author
-    - Number of Comments (to show how visible the post is as compared to other results fetched)
-    - Children (Comments)
     '''
     url = f"https://hn.algolia.com/api/v1/search?query={query}&tags=story&hitsPerPage={num_stories}"
     response = requests.get(url)
